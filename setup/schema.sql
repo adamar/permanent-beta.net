@@ -13,6 +13,9 @@ CREATE TABLE users (
 CREATE TABLE items (
     item_id             int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     item_uri		text,
+    item_title          varchar(255),
+    item_domain         varchar(30),
+    item_votes          int,
     item_user_id        int,
     item_status         enum('active','disabled'),
     item_created        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
