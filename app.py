@@ -40,7 +40,6 @@ class Application(tornado.web.Application):
         )
         tornado.web.Application.__init__(self, handlers, **settings)
 
-        # Have one global connection to the blog DB across all handlers
         self.db = torndb.Connection(
             host=options.mysql_host, database=options.mysql_database,
             user=options.mysql_user, password=options.mysql_password)
@@ -147,12 +146,9 @@ class signupHandler(BaseHandler):
         self.render("signup.html", message='')
 
     def post(self):
-        #username = unicode(tornado.escape.xhtml_escape(self.get_argument("username")),'utf8')
         username = tornado.escape.xhtml_escape(self.get_argument("username"))
-        #password = unicode(tornado.escape.xhtml_escape(self.get_argument("password")),'utf8')
         password = tornado.escape.xhtml_escape(self.get_argument("password"))
         passhash = hashlib.sha1(password+str(hashlib.sha1(password).hexdigest())).hexdigest()
-        #email = unicode(tornado.escape.xhtml_escape(self.get_argument("email")),'utf8')
         email = tornado.escape.xhtml_escape(self.get_argument("email"))
         #if username == exists:
             #self.redirect("/signup" + "name_taken")
