@@ -1,0 +1,62 @@
+
+{% include "header.html" %}
+
+
+    <div class="container"> 
+ 
+
+
+
+
+
+
+  <form class="form-horizontal" method="post">
+    <fieldset>
+      <div id="legend" class="">
+        <legend class="">Submit a Link</legend>
+      </div>
+    <div class="control-group">
+
+      {% module xsrf_form_html() %}
+
+          <!-- Text input-->
+          <label class="control-label" for="input01">Description</label>
+          <div class="controls">
+            <input type="text" placeholder="..." class="input-xlarge">
+            <p class="help-block">A succinct desciption of the page being linked to</p>
+          </div>
+        </div>
+
+    <div class="control-group">
+
+          <!-- Text input-->
+          <label class="control-label" for="input01">Page URL</label>
+          <div class="controls">
+            <input type="text" placeholder="..." class="input-xlarge">
+            <p class="help-block"></p>
+          </div>
+        </div>
+
+    <div class="control-group">
+          <label class="control-label"></label>
+
+          <!-- Button -->
+          <div class="controls">
+            <input class="btn btn-success" type="submit">Submit</input>
+          </div>
+        </div>
+
+    </fieldset>
+  </form>
+
+
+
+
+
+
+
+ 
+    </div> <!-- /container --> 
+
+
+{% include "footer.html" %}

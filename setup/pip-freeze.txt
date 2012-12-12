@@ -1,0 +1,10 @@
+#
+# Made using 
+#  pip freeze > pip-freeze.txt
+#
+# Install requirements using the following command
+#  pip install -r pip-freeze.txt
+#
+tornado==2.1
+torndb==0.1
+supervisor==3.0b1

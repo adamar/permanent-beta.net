@@ -1,0 +1,58 @@
+
+{% include "header.html" %}
+
+
+    <div class="container"> 
+ 
+
+
+
+  <form class="form-horizontal" method="post">
+    <fieldset>
+      <div id="legend" class="">
+        <legend class="">Login</legend>
+      </div>
+    <div class="control-group">
+
+       {% module xsrf_form_html() %}
+
+
+          <!-- Text input-->
+          <label class="control-label" for="input01">Username</label>
+          <div class="controls">
+            <input type="text" placeholder="..."  name="username" class="input-xlarge">
+            <p class="help-block">Your Username</p>
+          </div>
+        </div>
+
+    <div class="control-group">
+
+          <!-- Text input-->
+          <label class="control-label" for="input01">Password</label>
+          <div class="controls">
+            <input type="text" placeholder="..."  name="password" class="input-xlarge">
+            <p class="help-block">Your Password</p>
+          </div>
+        </div>
+
+
+    <div class="control-group">
+          <label class="control-label"></label>
+
+          <!-- Button -->
+          <div class="controls">
+            <input class="btn btn-success" value="Login" type="submit"></input>
+          </div>
+        </div>
+
+    </fieldset>
+  </form>
+
+
+
+
+ 
+    </div> <!-- /container --> 
+
+
+{% include "footer.html" %}
