@@ -65,13 +65,8 @@ class mainHandler(BaseHandler):
 
     '''
     def get(self):
-        #entries = self.db.query("SELECT * FROM entries ORDER BY published "
-        #                        "DESC LIMIT 5")
-        links = [['Producing AMQP messages from Ruby On Rails applications','http://blog.brianploetz.com/post/36886084370/producing-amqp-messages-from-ruby-on-rails-applications','blog.brianploetz.com'],
-                 ['Hooking a Remote Process and Stealing a Password in PowerShell','http://csharpening.net/?p=1409','csharpening.net'],
-                 ['Feudal Security','http://www.schneier.com/blog/archives/2012/12/feudal_sec.html','schneier.com'],
-                 ['Bitsquatting: DNS Hijacking without exploitation','http://dinaburg.org/bitsquatting.html','dinaburg.org']]
-        self.render("index.html",message='', links=links)
+        query_res = self.db.execute("""SELECT item_uri FROM items where item_status = 'active' item_timestamp > '24hours?' order by item_vote desc limit 15""")
+        self.render("index.html",message='', links=query_res)
 
 
 class newHandler(BaseHandler):
@@ -79,8 +74,8 @@ class newHandler(BaseHandler):
     This page lists the most recently submitted links
     '''
     def get(self):
-        res = self.db.execute("""SELECT item_uri FROM items where item_status = 'active' order by item_created desc limit 15""")
-        self.render("index.html",message='', links=res)
+        query_res = self.db.execute("""SELECT item_uri FROM items where item_status = 'active' order by item_created desc limit 15""")
+        self.render("index.html",message='', links=query_res)
 
 
 class submitHandler(BaseHandler):
