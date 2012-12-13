@@ -4,6 +4,7 @@ import os.path
 import re
 import tornado.auth
 import tornado.httpserver
+import tornado.autoreload
 import tornado.ioloop
 import tornado.options
 import tornado.web
@@ -109,7 +110,7 @@ class loginHandler(BaseHandler):
         self.render("login.html")
 
     def post(self):
-        username = tornado.escape.xhtml_escape(self.get_argument("username"))
+        username = unicode(tornado.escape.xhtml_escape(self.get_argument("username")),'utf8')
         password = tornado.escape.xhtml_escape(self.get_argument("password"))
         passhash = hashlib.sha1(password+str(hashlib.sha1(password).hexdigest())).hexdigest() 
         login_res =  self.db.query("SELECT user_id, user_password FROM users WHERE user_login = '%s'" % username)
@@ -159,6 +160,7 @@ def main():
     tornado.options.parse_command_line()
     http_server = tornado.httpserver.HTTPServer(Application())
     http_server.listen(options.port)
+    tornado.autoreload.start()
     tornado.ioloop.IOLoop.instance().start()
 
 
