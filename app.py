@@ -67,7 +67,7 @@ class mainHandler(BaseHandler):
     '''
     def get(self):
         query_res = self.db.execute("""SELECT 'http://www.example.com' as item_uri,
-                                       'Example link description' as item_title 
+                                       'Example link description' as item_title, 
                                        'example.com' as item_domain from items limit 15""")
         self.render("index.html",message='', links=query_res)
 
@@ -78,7 +78,7 @@ class newHandler(BaseHandler):
     '''
     def get(self):
         query_res = self.db.execute("""SELECT 'http://www.example.com' as item_uri,
-                                       'Example link description' as item_title 
+                                       'Example link description' as item_title, 
                                        'example.com' as item_domain from items limit 15""")
         self.render("index.html",message='', links=query_res)
 
