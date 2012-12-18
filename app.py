@@ -68,7 +68,6 @@ class mainHandler(BaseHandler):
     def get(self):
         query_res = self.db.query("""SELECT item_uri, item_title, 
                                        item_domain from items limit 15""")
-        #print query_res
         self.render("index.html",message='', links=query_res)
 
 
@@ -93,8 +92,8 @@ class submitHandler(BaseHandler):
         self.render("submit.html")
 
     def post(self):
-        link_title = tornado.escape.xhtml_escape(self.get_argument("link_title")
-        link_url = tornado.escape.xhtml_escape(self.get_argument("link_url")
+        link_title = tornado.escape.xhtml_escape(self.get_argument("link_title"))
+        link_url = tornado.escape.xhtml_escape(self.get_argument("link_url"))
         res = self.db.execute("""INSERT INTO items (item_uri, item_user_id, item_status)
                            VALUES ('%s','%d','active')""" % (link_url, 1))
         print res
@@ -114,7 +113,7 @@ class loginHandler(BaseHandler):
         self.render("login.html")
 
     def post(self):
-        username = tornado.escape.xhtml_escape(self.get_argument("username")
+        username = tornado.escape.xhtml_escape(self.get_argument("username"))
         password = tornado.escape.xhtml_escape(self.get_argument("password"))
         passhash = hashlib.sha1(password+str(hashlib.sha1(password).hexdigest())).hexdigest() 
         login_res =  self.db.query("SELECT user_id, user_password FROM users WHERE user_login = '%s'" % username)
