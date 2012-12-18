@@ -66,9 +66,9 @@ class mainHandler(BaseHandler):
 
     '''
     def get(self):
-        query_res = self.db.execute("""SELECT 'http://www.example.com' as item_uri,
-                                       'Example link description' as item_title, 
-                                       'example.com' as item_domain from items limit 15""")
+        query_res = self.db.query("""SELECT item_uri, item_title, 
+                                       item_domain from items limit 15""")
+        #print query_res
         self.render("index.html",message='', links=query_res)
 
 
@@ -77,7 +77,7 @@ class newHandler(BaseHandler):
     This page lists the most recently submitted links
     '''
     def get(self):
-        query_res = self.db.execute("""SELECT 'http://www.example.com' as item_uri,
+        query_res = self.db.query("""SELECT 'http://www.example.com' as item_uri,
                                        'Example link description' as item_title, 
                                        'example.com' as item_domain from items limit 15""")
         self.render("index.html",message='', links=query_res)

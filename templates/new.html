@@ -11,7 +11,7 @@
           {% for link in links %}
             <h4> 
             <a class="btn btn-success btn-small"> &#43;</a> 
-            <a href="{{ link[1] }}">{{ link[0] }}</a></h4> &#123; {{ link[2] }} &#125;
+            <a href="{{ link['item_uri'] }}">{{ link['item_title'] }}</a></h4> &#123; {{ link['item_domain'] }} &#125;
             <hr>
           {% end %}
 
