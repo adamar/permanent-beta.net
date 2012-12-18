@@ -12,6 +12,7 @@ import unicodedata
 from config import config
 import torndb
 import hashlib
+import urlparse
 
 from tornado.options import define, options
 
@@ -28,6 +29,7 @@ class Application(tornado.web.Application):
             (r"/", mainHandler),
             (r"/new", newHandler),
             (r"/submit", submitHandler),
+            (r"/vote/([^/]+)", voteHandler),
             (r"/login", loginHandler),
             (r"/logout", logoutHandler),
             (r"/signup", signupHandler),
@@ -67,7 +69,9 @@ class mainHandler(BaseHandler):
     '''
     def get(self):
         query_res = self.db.query("""SELECT item_uri, item_title, 
-                                       item_domain from items limit 15""")
+                                       item_domain from items  
+                                       WHERE item_created >= (SYSDATE() - INTERVAL 1 DAY)
+                                       order by item_votes desc limit 15""")
         self.render("index.html",message='', links=query_res)
 
 
@@ -76,9 +80,9 @@ class newHandler(BaseHandler):
     This page lists the most recently submitted links
     '''
     def get(self):
-        query_res = self.db.query("""SELECT 'http://www.example.com' as item_uri,
-                                       'Example link description' as item_title, 
-                                       'example.com' as item_domain from items limit 15""")
+        query_res = self.db.query("""SELECT item_uri, item_title, item_domain 
+                                     from items order by item_created desc 
+                                     limit 15""")
         self.render("index.html",message='', links=query_res)
 
 
@@ -94,14 +98,27 @@ class submitHandler(BaseHandler):
     def post(self):
         link_title = tornado.escape.xhtml_escape(self.get_argument("link_title"))
         link_url = tornado.escape.xhtml_escape(self.get_argument("link_url"))
-        res = self.db.execute("""INSERT INTO items (item_uri, item_user_id, item_status)
-                           VALUES ('%s','%d','active')""" % (link_url, 1))
-        print res
+        link_domain = urlparse.urlparse(link_url).netloc      
+        res = self.db.execute("""INSERT INTO items
+                                 (item_uri, item_title, item_domain, item_user_id, item_status)
+                                 VALUES ('%s', '%s', '%s','%d','active')""" % (link_url, link_title, link_domain, 1))
         #if exists in dblink_url:
         #    self.redirect("/submit?message=alreadygotthatlink")
         #else:
         #    self.db.query("insert into links (url) values ('%s')" % link_url)
-        self.redirect("index.html")
+        self.redirect("/")
+
+
+class voteHandler(BaseHandler):
+   '''
+   Vote submission
+   '''
+   def get(self, slug):
+       if not self.get_current_user():
+           self.redirect("/login")
+       slug = ''.join([i for i in slug if i in '1234567890'])
+       print slug
+       self.redirect("/%s" % slug)
 
 
 
