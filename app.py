@@ -61,6 +61,20 @@ class BaseHandler(tornado.web.RequestHandler):
         else:
             return None
 
+    def get_current_user_id(self):
+        user_id = self.get_secure_cookie("user_id")
+        if user_id:
+            return tornado.escape.json_decode(user_id)
+        else:
+            return None
+
+    def get_current_message(self):
+        message = self.get_secure_cookie("message") 
+        if message:
+            self.clear_cookie("message")
+            return tornado.escape.json_decode(message)
+        else:
+            return ''
 
 class mainHandler(BaseHandler):
     '''
@@ -68,11 +82,15 @@ class mainHandler(BaseHandler):
 
     '''
     def get(self):
+        
         query_res = self.db.query("""SELECT item_uri, item_title, 
                                        item_domain from items  
                                        WHERE item_created >= (SYSDATE() - INTERVAL 1 DAY)
                                        order by item_votes desc limit 15""")
-        self.render("index.html",message='', links=query_res)
+        self.render("index.html",
+                    message=self.get_current_message(), 
+                    logged_status=self.get_current_user(),
+                    links=query_res)
 
 
 class newHandler(BaseHandler):
@@ -83,7 +101,10 @@ class newHandler(BaseHandler):
         query_res = self.db.query("""SELECT item_uri, item_title, item_domain 
                                      from items order by item_created desc 
                                      limit 15""")
-        self.render("index.html",message='', links=query_res)
+        self.render("index.html",
+                    message=self.get_current_message(), 
+                    logged_status=self.get_current_user(),
+                    links=query_res)
 
 
 class submitHandler(BaseHandler):
@@ -93,7 +114,9 @@ class submitHandler(BaseHandler):
     def get(self):
         if not self.get_current_user():
             self.redirect("/login")
-        self.render("submit.html")
+        self.render("submit.html",
+                    logged_status=self.get_current_user(),
+                    message=self.get_current_message())
 
     def post(self):
         link_title = tornado.escape.xhtml_escape(self.get_argument("link_title"))
@@ -106,6 +129,7 @@ class submitHandler(BaseHandler):
         #    self.redirect("/submit?message=alreadygotthatlink")
         #else:
         #    self.db.query("insert into links (url) values ('%s')" % link_url)
+        self.set_secure_cookie("message", tornado.escape.json_encode("Thanks"))
         self.redirect("/")
 
 
@@ -116,9 +140,14 @@ class voteHandler(BaseHandler):
    def get(self, slug):
        if not self.get_current_user():
            self.redirect("/login")
-       slug = ''.join([i for i in slug if i in '1234567890'])
-       print slug
-       self.redirect("/%s" % slug)
+       slug = int(''.join([i for i in slug if i in '1234567890']))
+       uid = int(self.get_current_user_id())
+       if self.db.query("""SELECT * from votes where item_id = %d and user_id = %d""" % (slug,uid)):
+           self.redirect("/alreadyvoted")
+       else:
+           self.db.execute_lastrowid("""insert into votes (item_id,user_id) 
+                                    VALUES (%d, %d)""" % (slug, uid))
+           self.redirect("/")
 
 
 
@@ -127,16 +156,20 @@ class loginHandler(BaseHandler):
     Login Page
     '''
     def get(self):
-        self.render("login.html")
+        self.render("login.html",
+                    logged_status=self.get_current_user(),
+                    message=self.get_current_message())
 
     def post(self):
         username = tornado.escape.xhtml_escape(self.get_argument("username"))
         password = tornado.escape.xhtml_escape(self.get_argument("password"))
         passhash = hashlib.sha1(password+str(hashlib.sha1(password).hexdigest())).hexdigest() 
+        # Hash password and use as salt to rehash
         login_res =  self.db.query("SELECT user_id, user_password FROM users WHERE user_login = '%s'" % username)
         if login_res:
             if login_res[0]['user_password'] == passhash:
                 self.set_secure_cookie("user", tornado.escape.json_encode(username))
+                self.set_secure_cookie("user_id", tornado.escape.json_encode(login_res[0]['user_id']))
                 self.redirect("/")
         self.redirect("/bad")
 
@@ -159,7 +192,9 @@ class signupHandler(BaseHandler):
     '''
     def get(self):
         print "yay"
-        self.render("signup.html", message='')
+        self.render("signup.html", 
+                    logged_status=self.get_current_user(),
+                    message=self.get_current_message())
 
     def post(self):
         username = tornado.escape.xhtml_escape(self.get_argument("username"))
