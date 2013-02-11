@@ -35,7 +35,7 @@ class Application(tornado.web.Application):
             (r"/signup", signupHandler),
         ]
         settings = dict(
-            blog_title=u"Awesome Site",
+            blog_title=u"PermanentBeta.net",
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
             static_path=os.path.join(os.path.dirname(__file__), "static"),
             xsrf_cookies=True,
