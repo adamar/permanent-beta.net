@@ -85,7 +85,6 @@ class mainHandler(BaseHandler):
         
         query_res = self.db.query("""SELECT item_uri, item_title, 
                                        item_domain from items  
-                                       WHERE item_created >= (SYSDATE() - INTERVAL 1 DAY)
                                        order by item_votes desc limit 15""")
         self.render("index.html",
                     message=self.get_current_message(), 
