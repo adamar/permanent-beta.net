@@ -33,6 +33,7 @@ class Application(tornado.web.Application):
             (r"/login", loginHandler),
             (r"/logout", logoutHandler),
             (r"/signup", signupHandler),
+            (r"/about", aboutHandler),
         ]
         settings = dict(
             blog_title=u"PermanentBeta.net",
@@ -209,6 +210,19 @@ class signupHandler(BaseHandler):
         self.db.execute(new)
         print "redirecting"
         self.redirect("/")
+
+
+
+class aboutHandler(BaseHandler):
+    '''
+    About page
+    '''
+    def get(self):
+        self.render("about.html",
+                    message=self.get_current_message(),
+                    logged_status=self.get_current_user())
+
+
 
 def main():
     tornado.options.parse_command_line()
