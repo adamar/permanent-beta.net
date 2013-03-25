@@ -222,7 +222,6 @@ class aboutHandler(BaseHandler):
                     logged_status=self.get_current_user())
 
 
-
 def main():
     tornado.options.parse_command_line()
     http_server = tornado.httpserver.HTTPServer(Application())
