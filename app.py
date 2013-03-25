@@ -80,7 +80,6 @@ class BaseHandler(tornado.web.RequestHandler):
 class mainHandler(BaseHandler):
     '''
     This Page lists all recent top links
-
     '''
     def get(self):
         
